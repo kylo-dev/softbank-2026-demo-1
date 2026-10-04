@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Iris Commerce admin — orders, products and sales" />
+    <title>Iris Commerce 관리자</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <span class="brand"><span class="brand-mark" aria-hidden="true"></span>Iris Commerce</span>
+      <nav class="nav" data-i18n-aria="nav.label" aria-label="메인 메뉴">
+        <a href="#dashboard" data-view="dashboard" data-i18n="nav.dashboard">대시보드</a>
+        <a href="#orders" data-view="orders" data-i18n="nav.orders">주문 관리</a>
+        <a href="#products" data-view="products" data-i18n="nav.products">상품 관리</a>
+      </nav>
+      <label class="lang">
+        <span data-i18n="lang.label">언어</span>
+        <select id="lang">
+          <option value="ko">한국어</option>
+          <option value="ja">日本語</option>
+        </select>
+      </label>
+      <div class="server">
+        <span class="status" id="status"><span class="dot"></span><span id="status-text" data-i18n="health.checking">확인 중…</span></span>
+        <span>Host <code id="host">—</code></span>
+        <span>DB <code id="db">—</code></span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <p class="toast" id="toast" role="status" hidden></p>
+
+      <section class="view" id="view-dashboard">
+        <header class="view-head">
+          <h1 data-i18n="nav.dashboard">대시보드</h1>
+          <span class="muted" id="dashboard-updated"></span>
+        </header>
+
+        <div class="kpis">
+          <div class="card kpi"><span data-i18n="kpi.today">오늘 매출</span><strong id="kpi-today">—</strong><small id="kpi-today-orders"></small></div>
+          <div class="card kpi"><span data-i18n="kpi.month">최근 30일 매출</span><strong id="kpi-month">—</strong><small id="kpi-month-orders"></small></div>
+          <div class="card kpi"><span data-i18n="kpi.average">평균 주문액</span><strong id="kpi-average">—</strong><small data-i18n="kpi.last30">최근 30일</small></div>
+          <div class="card kpi"><span data-i18n="kpi.toShip">미발송 주문</span><strong id="kpi-ship">—</strong><small data-i18n="kpi.toShipNote">입금 대기 + 발송 준비 중</small></div>
+        </div>
+
+        <div class="card chart-card">
+          <h2><span data-i18n="chart.title">일별 매출</span> <span class="muted" data-i18n="chart.note">최근 14일 · 취소 제외 · JST</span></h2>
+          <div class="chart" id="chart">
+            <div class="chart-axis" id="chart-axis" aria-hidden="true"></div>
+            <div class="chart-bars" id="chart-bars" role="list"></div>
+            <div class="chart-tooltip" id="chart-tooltip" hidden></div>
+          </div>
+          <div class="chart-labels" id="chart-labels" aria-hidden="true"></div>
+        </div>
+
+        <div class="panels">
+          <div class="card panel">
+            <h2 data-i18n="panel.status">주문 상태</h2>
+            <ul class="rows" id="status-list"></ul>
+          </div>
+          <div class="card panel">
+            <h2><span data-i18n="panel.top">매출 Top 5</span> <span class="muted" data-i18n="kpi.last30">최근 30일</span></h2>
+            <ol class="rows" id="top-list"></ol>
+          </div>
+          <div class="card panel">
+            <h2><span data-i18n="panel.lowStock">재고 경고</span> <span class="muted" data-i18n="panel.lowStockNote">10개 미만</span></h2>
+            <ul class="rows" id="low-stock-list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-orders" hidden>
+        <header class="view-head">
+          <h1 data-i18n="nav.orders">주문 관리</h1>
+          <input type="search" id="order-search" data-i18n-placeholder="orders.search" data-i18n-aria="orders.search" placeholder="주문번호·고객명 검색" aria-label="주문번호·고객명 검색" />
+        </header>
+        <div class="chips" id="status-filter" role="group" data-i18n-aria="orders.filter" aria-label="상태별 필터"></div>
+        <div class="card table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="col.orderNo">주문번호</th><th data-i18n="col.orderedAt">주문 일시</th><th data-i18n="col.customer">고객</th>
+                <th data-i18n="col.prefecture">배송지</th><th data-i18n="col.product">상품</th><th class="num" data-i18n="col.quantity">수량</th>
+                <th class="num" data-i18n="col.total">금액</th><th data-i18n="col.payment">결제 수단</th><th data-i18n="col.status">상태</th>
+              </tr>
+            </thead>
+            <tbody id="order-rows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="view" id="view-products" hidden>
+        <header class="view-head">
+          <h1><span data-i18n="nav.products">상품 관리</span> <span class="muted" id="product-count"></span></h1>
+          <button type="button" id="add-product">＋ <span data-i18n="products.add">상품 등록</span></button>
+        </header>
+        <div class="card table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>SKU</th><th data-i18n="col.productName">상품명</th><th data-i18n="col.category">카테고리</th>
+                <th class="num" data-i18n="col.price">가격(세금 포함)</th><th class="num" data-i18n="col.stock">재고</th>
+                <th data-i18n="col.stockState">판매 상태</th><th class="actions" data-i18n="col.actions">관리</th>
+              </tr>
+            </thead>
+            <tbody id="product-rows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <dialog id="product-dialog">
+        <form id="product-form" method="dialog">
+          <h2 id="product-dialog-title"></h2>
+          <label><span data-i18n="col.productName">상품명</span><input name="name" maxlength="80" required /></label>
+          <label><span data-i18n="col.category">카테고리</span><select name="category" id="product-category" required></select></label>
+          <div class="form-row">
+            <label><span data-i18n="col.price">가격(세금 포함)</span><input name="price" type="number" min="0" max="9999999" step="1" required /></label>
+            <label><span data-i18n="col.stock">재고</span><input name="stock" type="number" min="0" max="99999" step="1" required /></label>
+          </div>
+          <p class="form-error" id="product-error" role="alert"></p>
+          <div class="dialog-actions">
+            <button type="button" class="ghost" id="product-cancel" data-i18n="form.cancel">취소</button>
+            <button type="submit" data-i18n="form.save">저장</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+  </body>
+</html>
