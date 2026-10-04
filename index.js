@@ -220,7 +220,7 @@ function buildDashboard(orders, products, now = Date.now()) {
 // ---------- HTTP ----------
 
 app.disable('x-powered-by');
-app.use(compression({ threshold: 1024; }));
+app.use(compression({ threshold: 1024 }));
 app.use(express.json({ limit: '16kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
