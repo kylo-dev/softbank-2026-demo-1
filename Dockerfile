@@ -1,6 +1,6 @@
 FROM node:22-alpine
 WORKDIR /app
-ENV NODE_ENV=production npm_config_engine_strict=true
+ENV NODE_ENV=production
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 COPY --chown=node:node . .
