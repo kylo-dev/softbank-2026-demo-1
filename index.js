@@ -314,7 +314,7 @@ app.delete('/api/products/:id', async (req, res, next) => {
   }
 });
 
-app.get('/health', async (_req, res) => {
+app.get('/health', (_req, res) => {
   let database = 'memory';
   if (pool) {
     try {
