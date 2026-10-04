@@ -1,3 +1,4 @@
+const compression = require('compression');
 const express = require('express');
 const os = require('node:os');
 const path = require('node:path');
@@ -219,6 +220,7 @@ function buildDashboard(orders, products, now = Date.now()) {
 // ---------- HTTP ----------
 
 app.disable('x-powered-by');
+app.use(compression());
 app.use(express.json({ limit: '16kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
