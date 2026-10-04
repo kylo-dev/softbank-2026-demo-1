@@ -1,0 +1,8 @@
+node_modules
+.git
+.claude
+.env
+.DS_Store
+db
+Dockerfile
+compose.yml

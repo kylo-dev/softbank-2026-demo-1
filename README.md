@@ -20,6 +20,14 @@ npm start
 DATABASE_URL=postgres://<USER>:<PASSWORD>@<HOST>:5432/<DB> npm start
 ```
 
+### Docker Compose
+
+```sh
+docker compose up -d --build
+```
+
+앱(`Dockerfile`)과 PostgreSQL 17(`db/Dockerfile`)을 함께 띄운다. DB 헬스체크 통과 후 앱이 기동한다. DB 비밀번호는 `.env`의 `POSTGRES_PASSWORD`(기본 `iris`). DB 포트는 호스트에 노출하지 않는다.
+
 ## 데이터 초기화
 
 **프로세스가 시작될 때마다** `products`, `orders` 테이블을 DROP 후 재생성하고 더미 데이터(상품 24개, 주문 100건, 최근 30일)를 넣는다. 배포하면 항상 같은 초기 상태가 된다.
