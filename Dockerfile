@@ -3,7 +3,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
-COPY --chown=node:node . .
+COPY --chown=node:node index.js seed.js ./
+COPY --chown=node:node public ./public
 RUN npm run build
 USER node
 EXPOSE 3000
